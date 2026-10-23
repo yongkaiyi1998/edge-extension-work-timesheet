@@ -1,6 +1,20 @@
 # QA results — 23 October 2026
 
-## V0.2.1 — current results
+## V0.3 — current results
+
+Changed: new templates.js for generic offline generation/resolution; core.js mode migration; background.js mode persistence; settings.html/settings.js selection and warnings; weekly.js mode-aware snapshots; xlsx.js optional Default-only row-height estimates and overflow print area. Updated versions, README, QA, .gitignore and package scripts. Added tests/v03.mjs, tests/check_default.py, scripts/package.mjs and four public docs/screenshots PNGs. Custom formatting and stored customer/project/task values are unchanged.
+
+Passed: existing Edge regressions and independent custom workbook check; V0.3 Edge suite for fresh no-import export, 60 long-text Default records across the year boundary, empty/demo exports, exact filenames, legacy Custom selection and backup migration, lossless mode switching, and confirmation reset during switching. Existing preview/data agreement, duplicate-download prevention, CRUD, daily hours, history and backup/restore tests remain enabled and pass.
+
+Independent Python ZIP/XML checks pass for all three Default outputs: only Sheet1, A–G, five consecutive numeric dates, WIP, grey/blue formatting, landscape fit-to-width printing, expanded row heights and a print area including Friday overflow. The private reference hash remains unchanged and reference/ remains ignored. Default generation never reads private reference bytes.
+
+Additional V0.3 checks pass for missing/invalid Custom warnings and recovery by selecting Default without removing the stored pointer. tests/check_package.py verifies all four relative README PNG paths and the built release ZIP: runtime/screenshots included, no reference/, tests/, .git/ or XLSX files. Only the four public screenshots were staged for Git tracking, as requested; no commit or push.
+
+Four real Edge screenshots were captured and visually inspected with fictional Demo Studio/Sample Workshop entries only. README relative paths resolve. Public packaging uses an explicit allowlist excluding reference/ and tests/; screenshots are source deliverables, while release ZIPs and generated test artifacts are ignored.
+
+Limitations: native Excel/Calc rendering and printing remain unverified. Default row heights are estimates capped at 409 points; extreme text can need manual resizing. Custom row heights remain unchanged. Preview typography is approximate. No destructive quota/disk-failure injection was added. No commit or push.
+
+## V0.2.1 — historical results
 
 Changed files: xlsx.js, weekly.js, weekly.html, style.css, manifest.json, package.json, tests/run.mjs, tests/check_workbook.py, README.md and QA.md. Stored projects and all storage/CRUD modules are unchanged.
 

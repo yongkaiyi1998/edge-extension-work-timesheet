@@ -32,7 +32,17 @@
       <label>Default customer<select id="defaultCustomer"></select></label>
     </section>
     <section>
-      <h2>Company template</h2>
+      <h2>XLSX template</h2>
+      <label
+        >Export template<select id="templateMode">
+          <option value="default">Default Template (built-in)</option>
+          <option value="custom">Custom Template (user-imported)</option>
+        </select></label
+      >
+      <p class="muted">
+        Switching keeps your imported template and all saved tasks. Importing a
+        template selects Custom.
+      </p>
       <p id="templateStatus"></p>
       <label
         >Import or replace XLSX template<input

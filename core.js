@@ -8,6 +8,7 @@ export const initial = () => ({
   defaultCustomer: "",
   uppercase: true,
   templateKey: null,
+  templateMode: "default",
 });
 export function date(s) {
   if (typeof s !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(s))
@@ -82,6 +83,10 @@ export function state(s) {
   )
     throw Error("Invalid or unsupported data version.");
   s.tasks.forEach(task);
+  if (s.templateMode === undefined)
+    s.templateMode = s.templateKey ? "custom" : "default";
+  if (!["default", "custom"].includes(s.templateMode))
+    throw Error("Invalid template mode.");
   s.projects ??= [];
   s.defaultProject ??= "";
   s.dailyTarget ??= 8;

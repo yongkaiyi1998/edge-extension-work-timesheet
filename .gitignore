@@ -3,3 +3,4 @@
 /tests/*.png
 /tests/*.xlsx
 /*.tgz
+/dist/

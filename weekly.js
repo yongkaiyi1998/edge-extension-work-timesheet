@@ -8,7 +8,7 @@ import {
   weekNumber,
 } from "./core.js";
 import { editor } from "./editor.js";
-import { templateGet } from "./db.js";
+import { selectedTemplate } from "./templates.js";
 import { exportColumns, exportDataset, exportWeek } from "./xlsx.js";
 let selected = monday(today());
 async function render() {
@@ -103,7 +103,7 @@ function invalidate() {
       "Data or week changed. Close and reopen Export Preview to validate again.";
 }
 const fingerprint = (s, week) =>
-  JSON.stringify([week, s.templateKey, weekTasks(s, week)]);
+  JSON.stringify([week, s.templateMode, s.templateKey, weekTasks(s, week)]);
 $("#confirmed").onchange = () => {
   $("#download").disabled =
     !prepared || !$("#confirmed").checked || downloading;
@@ -114,12 +114,13 @@ $("#preview").onclick = action(async () => {
     week = selected;
   $("#sheetPreview").replaceChildren();
   $("#warnings").textContent = "Validating workbook…";
-  $('#warnings').className='';$('#details').textContent='';
+  $("#warnings").className = "";
+  $("#details").textContent = "";
   $("#export").showModal();
   try {
     const s = await api("get"),
       tasks = weekTasks(s, week),
-      bytes = await templateGet(s.templateKey);
+      bytes = await selectedTemplate(s);
     const dataset = exportDataset(week, tasks);
     $("#details").textContent =
       week +
@@ -172,7 +173,9 @@ $("#preview").onclick = action(async () => {
     });
     $("#sheetPreview").replaceChildren(head, body);
     if (!bytes) throw Error("Template missing. Import one in Settings.");
-    const result = exportWeek(bytes, week, tasks);
+    const result = exportWeek(bytes, week, tasks, {
+      autoHeight: s.templateMode === "default",
+    });
     const latest = await api("get");
     if (
       ticket !== revision ||

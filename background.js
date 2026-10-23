@@ -37,7 +37,8 @@ async function run(m) {
     s.projects = m.projects;
     s.defaultProject = m.defaultProject;
     s.dailyTarget = m.dailyTarget;
-  } else if (m.op === "uppercase") s.uppercase = !!m.value;
+  } else if (m.op === "templateMode") s.templateMode = m.mode;
+  else if (m.op === "uppercase") s.uppercase = !!m.value;
   else if (m.op === "template") {
     if (
       !Array.isArray(m.bytes) ||
@@ -48,6 +49,7 @@ async function run(m) {
     )
       throw Error("Invalid template bytes.");
     s.templateKey = await templatePut(new Uint8Array(m.bytes).buffer);
+    s.templateMode = "custom";
   } else if (m.op === "backup") {
     const bytes = await templateGet(s.templateKey);
     if (s.templateKey && !bytes)

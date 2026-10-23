@@ -58,11 +58,27 @@ async function render() {
     select.append(el("option", c, { value: c })),
   );
   select.value = snapshot.defaultCustomer;
+  $("#templateMode").value = snapshot.templateMode;
   const bytes = await templateGet(snapshot.templateKey);
-  $("#templateStatus").textContent = bytes
-    ? templateSummary(bytes)
-    : "No template imported.";
+  try {
+    $("#templateStatus").textContent =
+      snapshot.templateMode === "default"
+        ? "Ready · Default Template (built-in). No import needed."
+        : bytes
+          ? templateSummary(bytes)
+          : "Custom template missing. Import one or choose Default Template.";
+  } catch (e) {
+    $("#templateStatus").textContent =
+      "Custom template invalid: " +
+      e.message +
+      " Select Default Template or replace the custom file.";
+  }
 }
+$("#templateMode").onchange = action(async () => {
+  await api("templateMode", { mode: $("#templateMode").value });
+  await render();
+  message("Export template selection saved.");
+});
 $("#addCustomer").onsubmit = async (e) => {
   e.preventDefault();
   const b = e.submitter;

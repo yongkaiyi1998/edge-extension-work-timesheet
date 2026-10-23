@@ -542,7 +542,12 @@ export function exportDataset(selected, tasks) {
       ]),
   }));
 }
-export function exportWeek(bytes, selected, tasks) {
+export function exportWeek(
+  bytes,
+  selected,
+  tasks,
+  { autoHeight = false } = {},
+) {
   const dataset = exportDataset(selected, tasks);
   const result = exportLegacyWeek(bytes, selected, tasks),
     z = unpack(result.bytes);
@@ -562,6 +567,25 @@ export function exportWeek(bytes, selected, tasks) {
       at = 0;
     } else if (n > 1 && value(cell(row, "C"), []) !== "") {
       const values = dataset[day].rows[at++];
+      if (autoHeight) {
+        const widths = [26, 20, 64, 12, 15, 13, 28];
+        const lines = Math.max(
+          ...values.map((v, i) =>
+            String(v)
+              .split("\n")
+              .reduce(
+                (n, line) =>
+                  n + Math.max(1, Math.ceil(line.length / (widths[i] - 3))),
+                0,
+              ),
+          ),
+        );
+        row.setAttribute(
+          "ht",
+          String(Math.min(409, Math.max(36, lines * 16 + 8))),
+        );
+        row.setAttribute("customHeight", "1");
+      }
       values.forEach((v, i) => write(getCell(row, "ABCDEFG"[i]), v));
     }
     // The template contains unused formatting through Z. Limit report to A–G.
@@ -591,6 +615,16 @@ export function exportWeek(bytes, selected, tasks) {
       ),
   );
   z[path] = strToU8(serialize(ws));
+  if (autoHeight) {
+    const wb = read(z, "xl/workbook.xml");
+    const area = nodes(wb, "definedName").find(
+      (n) => n.getAttribute("name") === "_xlnm.Print_Area",
+    );
+    if (area)
+      area.textContent =
+        "Sheet1!$A$1:$G$" + dimension.getAttribute("ref").split("G")[1];
+    z["xl/workbook.xml"] = strToU8(serialize(wb));
+  }
   const output = zipSync(z, { level: 6 }),
     check = read(unpack(output), path);
   const cells = new Map(nodes(check, "c").map((c) => [c.getAttribute("r"), c]));

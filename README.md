@@ -1,43 +1,96 @@
-# Quick Timesheet — Local Edition 0.2.1
+# Quick Timesheet · Local Edition V0.3
 
-V0.2 adds independent projects (saved/default/one-time), a configurable daily target (8 h initially), and a live logged/remaining/overtime preview that excludes the original task when editing. Overtime is informational. New tasks default to Chargeable No; existing values remain intact. Old tasks and version-1 backups remain readable without assigning projects to historical tasks.
+Private, offline work logging for Chrome and Edge. **Export a formatted weekly XLSX immediately—no template import or account needed.**
 
-Exports use A–G: Project Name, Customer, Task / Work, Hours Spent, Status, Chargeable, Remarks. Numeric dates appear only in column A on the five blue weekday separators; normal rows use A for projects. Column A is width 26 for readable weekday dates; Task / Work retains the original width. In Progress exports as WIP. Company styles, overflow insertion and page settings remain intact; unused formatting beyond G is removed.
+## Features
 
-Export Preview shows all five days in a scrollable spreadsheet-style table using the export engine's normalized dataset. Workbook validation must succeed, then you must check **I have reviewed and confirmed the timesheet** before **Confirm & Download** becomes available. Data or week changes reset confirmation; reopen preview to validate again. Preview styling approximates the company workbook and is not native Excel rendering.
+- Quick Add with customers, projects, uppercase preference and live daily-hours totals.
+- Weekly dashboard, historical weeks, editing and confirmed deletion.
+- Built-in Default and imported Custom templates with automatic overflow rows.
+- Spreadsheet preview, workbook validation and explicit download confirmation.
+- Complete local JSON backup/restore; no cloud services.
 
-An offline Manifest V3 extension for Windows 10 Chrome and Microsoft Edge. No build step, backend, account, runtime CDN or network access. Only the `storage` extension permission is requested.
+## Screenshots
 
-## Install
+Real Edge extension screens with fictional demonstration data only.
 
-1. Keep this repository in a permanent local folder.
-2. Open `edge://extensions` or `chrome://extensions` and enable **Developer mode**.
-3. Choose **Load unpacked** and select this folder, containing `manifest.json`.
-4. Pin **Quick Timesheet** to the toolbar. Open it, then choose **Settings**.
-5. Add customers and select a default. Import `reference/Timesheet-43_2026-10-19.xlsx` using **Import Template**. The reference file stays local and is ignored by Git; it is not bundled into the extension source.
+### Quick Add
+![Quick Add with daily-hours preview](docs/screenshots/quick-add.png)
 
-## Workflow
+### Weekly Tasks
+![Weekly dashboard with fictional entries](docs/screenshots/weekly-dashboard.png)
 
-- **Quick Add:** enter a date, customer, work, hours, status and chargeability. Choose the custom-entry option for a one-time customer. Auto UPPERCASE changes text only when saving, and its preference persists. Save success appears only after durable storage succeeds.
-- **Weekly Tasks:** navigate weeks or pick any date to select its Monday. Review daily and weekly totals; edit tasks or confirm individual deletion. Historical weeks remain available.
-- **Export Preview:** review the selected range, exact filename, count, hours and template status; click **Download XLSX**. The exporter reads current saved tasks, starts with fresh template bytes, expands day sections as needed, then reopens and validates the generated file. Tasks remain saved afterward.
-- **Settings:** customer rename/removal affects the saved dropdown only, not historical tasks. Template replacement requires confirmation.
-- **Backup / Restore:** download versioned JSON including every task, customer, preference and the full XLSX template. To restore, select that JSON, choose **Validate and Restore**, and confirm replacement. Invalid backups leave existing data intact. Save a current backup before restoring.
+### Export Preview
+![Spreadsheet preview and confirmation controls](docs/screenshots/export-preview.png)
 
-Data belongs to this browser profile and extension installation. Back up before removing the extension, changing profiles or moving machines. Chrome and Edge keep separate stores. Browser reload and extension reload preserve data.
+### Settings
+![Settings with Default and Custom template selection](docs/screenshots/settings-templates.png)
 
-## Implementation
+## Install in Chrome or Edge
 
-Vanilla HTML/CSS/JavaScript. `background.js` serializes mutations to a single versioned `chrome.storage.local` state object. Task IDs suppress repeated creates; edits detect conflicting changes. Imported template versions use IndexedDB. Restore writes template bytes first and switches the state/template pointer in one storage write; a failed switch retains the previous state. Unreferenced template versions can remain in IndexedDB after replacements or failed restores.
+1. Extract the release ZIP into a permanent folder, or use the source folder.
+2. Open `chrome://extensions` or `edge://extensions`.
+3. Enable **Developer mode**, choose **Load unpacked**, and select the folder containing `manifest.json`.
+4. Pin **Quick Timesheet** to the toolbar. No build step is required.
 
-`xlsx.js` is a small OOXML engine using bundled **fflate 0.8.3** for ZIP processing (`vendor/fflate.js`, MIT license in `vendor/LICENSE`). It identifies date sections from cell number formats and work-row styles rather than fixed write addresses. It preserves the original style definitions, row attributes, columns and page settings, shifts ranges/drawing anchors during expansion, removes excluded sheets and unreachable package parts, and writes user text as literal inline strings. No formula evaluation or remote code is used.
+For an existing installation, keep its folder location, replace the source files and click **Reload** on the extensions page. Back up first; do not remove the extension to update it.
 
-The supplied template has Sheet1 and Sheet6, date rows 2/8/12/18/24, daily capacities 4/2/5/4/4, no merged cells, and only five Sheet1 formulas (the weekday dates). Export replaces them with numeric Excel dates. Monday receives a cloned date style using the template's existing weekday number format so all five dates display weekdays. Old template work data and the stale shared-string pool are removed.
+## Quick start
 
-## Limits and QA
+1. Open Quick Add and choose a customer (one-time entries need no setup).
+2. Enter the date, optional project, work description and hours, then **Save Task**.
+3. Open **Weekly Tasks**, select a week and choose **Export Preview**.
+4. Review all five days, check **I have reviewed and confirmed the timesheet**, then **Confirm & Download**.
 
-See [QA.md](QA.md) for actual checks and limitations. Exports are Monday–Friday. Weekend tasks remain visible and editable; export rejects a week containing them so none are silently omitted. Changed templates with formulas outside the date separators, merged task cells, unsupported date systems or incompatible layouts are rejected. Template import is limited to 20 MB and 60 MB expanded XML; backups to 100 MB. Browser storage quotas still apply and failures are reported.
+## Default vs Custom XLSX templates
 
-No native Excel visual/print verification has been performed. Original fixed row heights are preserved, so long or multiline text may need row-height adjustment in Excel. General-purpose formula recalculation and arbitrary redesigned company templates are outside this release's scope.
+Choose **Settings → Export template**:
 
-For development QA, run `node tests/run.mjs` with Node 22+, installed Edge, and Playwright Core available. Set `CODEX_NODE_MODULES` to a directory containing `playwright-core`, and optionally `CHROMIUM_PATH` to a compatible Chromium executable. The test uses a separate temporary browser profile, never your normal profile. Then run `python tests/check_workbook.py` for independent standard-library ZIP/XML checks. No test dependency is required to install or use the extension.
+| Mode | Behavior |
+| --- | --- |
+| **Default Template (built-in)** | Ready on fresh installations. Generated entirely offline with generic grey headers, blue weekday rows, wrapped text, estimated row heights and landscape printing fitted to one page wide. |
+| **Custom Template (user-imported)** | Uses your compatible imported workbook, preserving company formatting and page settings. Importing selects Custom. Existing installations with imported templates retain Custom. |
+
+Switching modes keeps imported bytes and saved tasks. Missing or invalid Custom templates show a warning; select Default or import a replacement. The private development reference workbook is never distributed.
+
+Both modes export only **Sheet1**, with **Project Name · Customer · Task / Work · Hours Spent · Status · Chargeable · Remarks**. Dates appear on five weekday separator rows, without a dedicated Date column.
+
+## Weekly export and confirmation
+
+Preview shows Monday–Friday, including empty days, filename, task count and hours. Each download starts with fresh template bytes, expands weekday sections and reopens the generated XLSX to validate dates, placement, values and formatting. **In Progress** exports as **WIP**. New tasks default to **Chargeable: No**.
+
+Successful validation and an explicit review checkbox are required. Data or template changes reset confirmation; reopen preview to validate again. Repeated clicks cannot download the same validated snapshot twice. Exporting never deletes tasks.
+
+Filename example: `Timesheet_43_2026-10-19.xlsx`. ISO week and Monday come from the selected week, including across year boundaries.
+
+## Customer and Project settings
+
+Add, rename, remove and choose default customers/projects. One-time choices do not change saved lists. Renaming or removing choices never rewrites historical tasks. Older records without projects remain valid with blank projects.
+
+The daily target defaults to **8 hours**. Quick Add shows logged, remaining and overtime hours for the selected date, including the draft in remaining/overtime. Editing excludes the original task before calculating. Overtime is informational and does not prevent saving.
+
+## Backup / Restore
+
+**Download JSON Backup** includes tasks, customers, projects, preferences, template selection and imported Custom bytes—even while Default is selected. Keep backups in a safe local folder.
+
+To restore, select the JSON file, choose **Validate and Restore**, and confirm replacement. Back up current data first. Legacy backups remain supported: an included custom template selects Custom; otherwise Default is available immediately. Invalid backups leave current data intact.
+
+## Offline privacy and known limitations
+
+Data stays in this browser profile: tasks/preferences in `chrome.storage.local`, imported templates in IndexedDB. No backend, authentication, analytics, cloud integration, runtime CDN or external transmission. Only the `storage` permission is requested. Removing the extension or changing profiles requires a backup to retain data.
+
+- Reports cover Monday–Friday. Weekend tasks remain editable, but export warns and rejects the week rather than silently omitting them.
+- Native Excel/Calc rendering and printing remain unverified. Preview is an approximation. Default row heights are estimated up to Excel's height limit; very long text can still need resizing. Custom row heights stay unchanged.
+- Custom templates must match the supported weekday layout. Non-date formulas, merged task cells, 1904 dates and incompatible layouts are rejected; arbitrary formula recalculation is unsupported.
+- Limits: 20 MB imported template, 60 MB expanded XML, 100 MB backup; browser quotas also apply. Failures are reported. Unreferenced older template versions can remain locally.
+
+## Development and QA
+
+See [QA.md](QA.md) for actual checks and unverified environments. Node and Python are not required to use the extension.
+
+- `node tests/run.mjs`: custom-template/application regressions (requires the private local test reference).
+- `node tests/v03.mjs`: Default export, migration, switching and real screenshot capture; fictional data and a generated generic custom fixture only.
+- `python tests/check_workbook.py` and `python tests/check_default.py`: independent ZIP/XML checks.
+- `node scripts/package.mjs`: builds `dist/quick-timesheet-0.3.0.zip` from an explicit public-file allowlist excluding references and tests.
+
+Browser QA uses Node, installed Edge and Playwright Core. Set `CODEX_NODE_MODULES` to its modules directory and optionally `CHROMIUM_PATH`. Tests use isolated temporary profiles. Runtime ZIP processing uses bundled fflate 0.8.3 ([MIT license](vendor/LICENSE)).

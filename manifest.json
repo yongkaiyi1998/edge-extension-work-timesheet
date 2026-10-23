@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Quick Timesheet — Local Edition",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "Private local work logging and company-template weekly XLSX export.",
   "permissions": ["storage"],
   "action": {
