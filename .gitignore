@@ -1,0 +1,5 @@
+/reference/
+/node_modules/
+/tests/*.png
+/tests/*.xlsx
+/*.tgz

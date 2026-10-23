@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Weekly Tasks · Quick Timesheet</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body class="weekly">
+    <header>
+      <h1>Weekly Tasks</h1>
+      <nav>
+        <a class="add-task" href="popup.html" target="_blank">Add Task</a
+        ><a href="settings.html">Settings</a>
+      </nav>
+    </header>
+    <div id="message" role="status" aria-live="polite"></div>
+    <div class="bar">
+      <button id="prev">← Previous</button
+      ><input
+        id="week"
+        type="date"
+        aria-label="Selected week"
+        style="width: auto"
+      /><button id="next">Next →</button
+      ><button id="current" class="secondary">This week</button
+      ><button id="preview">Export Preview</button>
+    </div>
+    <h2 id="range"></h2>
+    <p id="summary"></p>
+    <main id="days"></main>
+    <dialog id="edit">
+      <button id="closeEdit" class="secondary">Close editor</button>
+      <div id="editor"></div>
+    </dialog>
+    <dialog id="export">
+      <h2>Export Preview</h2>
+      <p id="details"></p>
+      <p id="warnings" role="status"></p>
+      <div class="sheet-scroll" tabindex="0" aria-label="Timesheet preview">
+        <table id="sheetPreview"></table>
+      </div>
+      <p class="muted">
+        Template-style preview; native Excel rendering may differ.
+      </p>
+      <label class="review"
+        ><input type="checkbox" id="confirmed" /> I have reviewed and confirmed
+        the timesheet.</label
+      >
+      <button id="download" disabled>Confirm &amp; Download</button>
+      <button id="closeExport" class="secondary">Close</button>
+    </dialog>
+    <script type="module" src="weekly.js"></script>
+  </body>
+</html>

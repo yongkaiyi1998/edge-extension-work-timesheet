@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Settings · Quick Timesheet</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Settings</h1>
+      <nav>
+        <a href="popup.html" target="_blank">Quick Add</a
+        ><a href="weekly.html">Weekly Tasks</a>
+      </nav>
+    </header>
+    <div id="message" role="status" aria-live="polite"></div>
+    <section>
+      <h2>Customers</h2>
+      <p class="muted">
+        Renaming or removing a customer keeps historical task values unchanged.
+      </p>
+      <div id="customers"></div>
+      <form id="addCustomer">
+        <label
+          >New customer<input
+            id="newCustomer"
+            required
+            maxlength="32767" /></label
+        ><button>Add Customer</button>
+      </form>
+      <label>Default customer<select id="defaultCustomer"></select></label>
+    </section>
+    <section>
+      <h2>Company template</h2>
+      <p id="templateStatus"></p>
+      <label
+        >Import or replace XLSX template<input
+          id="template"
+          type="file"
+          accept=".xlsx" /></label
+      ><button id="importTemplate">Import Template</button>
+    </section>
+    <section>
+      <h2>Backup / Restore</h2>
+      <p>
+        Backup includes all tasks, customers, preferences and the imported
+        template. Keep it in a safe local folder.
+      </p>
+      <button id="backup">Download JSON Backup</button
+      ><label
+        >Restore JSON backup<input
+          id="restoreFile"
+          type="file"
+          accept=".json" /></label
+      ><button id="restore">Validate and Restore</button>
+      <p class="muted">
+        Restore replaces all current data after validation and confirmation.
+      </p>
+    </section>
+    <script type="module" src="settings.js"></script>
+  </body>
+</html>
